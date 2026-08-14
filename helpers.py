@@ -1,17 +1,14 @@
 from datetime import datetime
-from functools import wraps
 
-from flask import redirect, session, url_for
+from flask import request
 
 
-def admin_required(view):
-    @wraps(view)
-    def wrapped(*args, **kwargs):
-        if not session.get("is_admin"):
-            return redirect(url_for("admin_login"))
-        return view(*args, **kwargs)
-
-    return wrapped
+def wants_json():
+    """True when the caller is our fetch() code rather than a plain form post."""
+    return (
+        request.headers.get("X-Requested-With") == "XMLHttpRequest"
+        or request.accept_mimetypes.best == "application/json"
+    )
 
 
 def usd(cents):
